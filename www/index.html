@@ -1,0 +1,185 @@
+<html>
+
+<head>
+    <title>LED Sudare Simulator</title>
+</head>
+
+<body>
+    <div id="container"></div>
+    </div>
+    <script src="./dist/three.min.js"></script>
+
+    <script>
+
+        const LedCylinderCount = 60;
+        const LedCylinderWidth = 30;
+        const LedCylinderHeight = 100;
+
+        var colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x000000];
+        let displayFaceCount = 8;
+        let displayFaceDegree = 3.14 / displayFaceCount;
+
+        let dataFaceCount = LedCylinderCount;
+        let dataFaceDegree = 3.14 / dataFaceCount;
+
+
+        var center = { x: 0, y: 50 };
+        var renderer, scene, camera, group;
+
+        init();
+        animate();
+
+        let ws = new WebSocket('ws://' + window.location.host + '/ws')
+        //        var faces = [];
+        var frameBuffer = null;
+
+        // 接続
+        ws.addEventListener('open', function (e) {
+            console.log('WebSocket!!');
+        });
+        // サーバーからデータを受け取る
+        ws.addEventListener('message', function (e) {
+
+            new Response(e.data).arrayBuffer()
+                .then((buffer) => {
+                    frameBuffer = new Uint8Array(buffer);
+                });
+
+        });
+
+
+        function createGroup2() {
+            // グループを作る
+            const geometry = new THREE.Geometry();
+            for (var y = LedCylinderHeight - 1; y >= 0; y--) {
+                for (var x = -15; x <= 14; x++) {
+
+                    geometry.vertices.push(
+                        new THREE.Vector3(x, y, 0)
+                    );
+                    geometry.colors.push(
+                        new THREE.Color(0, 1, 0)
+                    );
+                }
+            }
+            return new THREE.Points(geometry, new THREE.PointsMaterial({
+                // 一つ一つのサイズ
+                size: 1,
+                vertexColors: THREE.VertexColors
+            }));
+        }
+
+        function init() {
+            var container = document.getElementById('container');
+            let rot = 0; // 角度
+            let mouseX = 0; // マウス座標
+
+            let canvasSize = { width: 640, height: 1000 };
+
+            // シーン
+            scene = new THREE.Scene();
+            group = new THREE.Group();
+
+            for (var i = 0; i < displayFaceCount; i++) {
+                var g = createGroup2();
+                g.rotation.y = Math.PI / displayFaceCount * i
+                // 3D空間にグループを追加する
+                group.add(g);
+            }
+            scene.add(group);
+
+            // 床
+            var oneWidth = 10, oneHeight = 10, wUnits = 11, hUnits = 11;
+            var groundGeo = new THREE.PlaneGeometry(oneWidth * wUnits, oneHeight * hUnits, wUnits, hUnits);
+            for (var i = 0, len = groundGeo.faces.length, f = -1; i < len; i++) {
+                f = -1;
+                if ((i / wUnits | 0) % 2 == 1) { f = ~f; }
+                if ((i % wUnits) % 2 == 1) { f = ~f; }
+                groundGeo.faces[i].materialIndex = f + 1;
+            }
+            var ground = new THREE.Mesh(
+                groundGeo,
+                [
+                    new THREE.MeshBasicMaterial({ color: 0x999999, wireframe: true }),
+                    new THREE.MeshBasicMaterial({ color: 0x4d4d4d, wireframe: true })
+                ]
+            );
+            ground.rotation.x = -Math.PI / 2;
+            scene.add(ground);
+
+
+            // ライト
+            // var light = new THREE.DirectionalLight(0xffffff, 1);
+            // scene.add(light);
+            // light.position.set(30, 100, 50);
+            // light.position.normalize();
+
+            // カメラ
+            camera = new THREE.PerspectiveCamera(30, canvasSize.width / canvasSize.height, 1, 1000);
+            camera.position.set(150, 50, 145);
+            camera.lookAt(new THREE.Vector3(0, 50, 0))
+            // レンダラ
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(canvasSize.width, canvasSize.height);
+
+            container.appendChild(renderer.domElement);
+
+        };
+
+        function animate() {
+            requestAnimationFrame(animate);
+            render();
+
+        }
+        function render() {
+            group.rotation.y += 0.03;
+            group.rotation.y %= displayFaceDegree; // この2行は擬似的に回転を表現するため
+
+            let offset = group.rotation.y
+            if (frameBuffer) {
+                for (var i = 0; i < group.children.length; i++) {
+                    let geometory = group.children[i].geometry;
+                    geometory.colorsNeedUpdate = true;
+                    var degggg = (group.children[i].rotation.y + offset) % Math.PI
+                    let faceNo = Math.floor((degggg) / dataFaceDegree) % dataFaceCount;
+
+
+                    for (var y = 0; y < LedCylinderHeight; y++) {
+                        for (var x = 0; x < LedCylinderWidth; x++) {
+                            var geoIdx = (LedCylinderWidth * y) + x
+                            var dataIdx = ((faceNo * LedCylinderHeight * LedCylinderWidth) + (LedCylinderWidth * y) + x) * 3
+                            var color = ((frameBuffer[dataIdx] << 16) >>> 0) +
+                                ((frameBuffer[dataIdx + 1] << 8) >>> 0) +
+                                ((frameBuffer[dataIdx + 2] << 0) >>> 0);
+                            var targetColor = geometory.colors[geoIdx];
+                            if (targetColor) {
+                                targetColor.setHex(color);
+
+                            }
+                            else {
+                                console.log(geoIdx);
+                            }
+                        }
+                    }
+
+                }
+            }
+            console.log(new Date())
+            renderer.render(scene, camera);
+        }
+
+        document.addEventListener('click', function () {
+            let index = Math.round((group.rotation.y % (Math.PI * 2)) / (Math.PI * 2 / colors.length));
+            console.log(index);
+            for (var i = 0; i < group.children.length; i++) {
+                let geometory = group.children[i].geometry;
+                geometory.colorsNeedUpdate = true;
+                for (var j = 0; j < geometory.vertices.length; j++) {
+                    geometory.colors[j] = new THREE.Color(colors[index]);
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
