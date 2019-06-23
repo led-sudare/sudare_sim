@@ -57,6 +57,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 		err := util.EditSharedByteData(util.CylinderDataSharedObjectID,
 			func(editable util.ByteData) error {
 				log.Info("Send WebSocket Data: ", len(editable.GetBytes()))
+				ws.SetWriteDeadline(time.Now().Add(200 * time.Millisecond))
 				if err := ws.WriteMessage(websocket.BinaryMessage, editable.GetBytes()); err != nil {
 					log.Debug("ws.WriteMessage", err)
 					http.Error(w, "Internal Error"+err.Error(), http.StatusInternalServerError)
