@@ -1,8 +1,10 @@
-package util
+package lib
 
 import (
 	log "github.com/cihub/seelog"
 	zmq "github.com/zeromq/goczmq"
+
+	"simulator/lib/util"
 )
 
 type serviceGatewayCylinderData struct {
@@ -15,13 +17,13 @@ const CylinderDataSharedObjectID = "cylinder"
 
 var gServiceGatewayCylinderData *serviceGatewayCylinderData
 
-func NewLedSudareData() ByteData {
-	return NewByteData(CylinderWidth * CylinderHeight * CylinderCount * CylinderColorPlane)
+func NewLedSudareData() util.ByteData {
+	return util.NewByteData(CylinderWidth * CylinderHeight * CylinderCount * CylinderColorPlane)
 }
 
 func InitSeriveGatewayCylinderData(endpoint string) {
 
-	AddSharedByteData(CylinderDataSharedObjectID, NewLedSudareData())
+	util.AddSharedByteData(CylinderDataSharedObjectID, NewLedSudareData())
 
 	gServiceGatewayCylinderData = &serviceGatewayCylinderData{}
 	var err error
@@ -72,10 +74,10 @@ func serviceGatewayCylinderDataWorker(sock *zmq.Sock, c chan string, done chan s
 				continue
 			}
 
-			EditSharedByteData(CylinderDataSharedObjectID,
-				func(editable ByteData) error {
+			util.EditSharedByteData(CylinderDataSharedObjectID,
+				func(editable util.ByteData) error {
 
-					ConcurrentEnum(0, CylinderCount, func(r int) {
+					util.ConcurrentEnum(0, CylinderCount, func(r int) {
 						for y := 0; y < CylinderHeight; y++ {
 							for x := 0; x < CylinderWidth; x++ {
 								idxFrom := (r * CylinderHeight * CylinderWidth * plane) +

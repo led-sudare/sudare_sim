@@ -10,6 +10,7 @@ import (
 	"github.com/gorilla/websocket"
 
 	"simulator/lib/util"
+	"simulator/lib"
 )
 
 var (
@@ -54,7 +55,7 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 
 	for {
 		<-clock.C
-		err := util.EditSharedByteData(util.CylinderDataSharedObjectID,
+		err := util.EditSharedByteData(lib.CylinderDataSharedObjectID,
 			func(editable util.ByteData) error {
 				log.Info("Send WebSocket Data: ", len(editable.GetBytes()))
 				ws.SetWriteDeadline(time.Now().Add(200 * time.Millisecond))
@@ -87,7 +88,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 func main() {
 	flag.Parse()
 
-	util.InitSeriveGatewayCylinderData("tcp://" + *optInputPort)
+	lib.InitSeriveGatewayCylinderData("tcp://" + *optInputPort)
 
 	/// setup and start http server
 	http.HandleFunc("/", serveHome)

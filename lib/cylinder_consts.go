@@ -1,4 +1,4 @@
-package util
+package lib
 
 const CylinderWidth = 30
 const CylinderHeight = 100
