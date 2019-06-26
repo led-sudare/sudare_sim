@@ -9,8 +9,8 @@ import (
 	log "github.com/cihub/seelog"
 	"github.com/gorilla/websocket"
 
-	"simulator/lib/util"
 	"simulator/lib"
+	"simulator/lib/util"
 )
 
 var (

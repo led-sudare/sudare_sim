@@ -17,15 +17,16 @@
         var isPause = false;
 
         const LedCylinderCount = 60;
-        const LedCylinderWidth = 30;
+        const LedCylinderDiameter = 30;
+        const LedCylinderRadius = LedCylinderDiameter / 2;
         const LedCylinderHeight = 100;
 
         var colors = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x000000];
-        let displayFaceCount = 8;
-        let displayFaceDegree = 3.14 / displayFaceCount;
+        let displayFaceCount = 16;
+        let displayFaceDegree = (2 * Math.PI) / displayFaceCount;
 
         let dataFaceCount = LedCylinderCount;
-        let dataFaceDegree = 3.14 / dataFaceCount;
+        let dataFaceDegree = (2 * Math.PI) / dataFaceCount;
 
 
         var center = { x: 0, y: 50 };
@@ -89,11 +90,11 @@
         }
 
 
-        function createGroup2() {
+        function createGroup() {
             // グループを作る
             const geometry = new THREE.Geometry();
-            for (var y = LedCylinderHeight - 1; y >= 0; y--) {
-                for (var x = -15; x <= 14; x++) {
+            for (var y = 0; y < LedCylinderHeight; y++) {
+                for (var x = 0; x < LedCylinderRadius; x++) {
 
                     geometry.vertices.push(
                         new THREE.Vector3(x, y, 0)
@@ -122,8 +123,8 @@
             group = new THREE.Group();
 
             for (var i = 0; i < displayFaceCount; i++) {
-                var g = createGroup2();
-                g.rotation.y = Math.PI / displayFaceCount * i
+                var g = createGroup();
+                g.rotation.y = (2 * Math.PI) / displayFaceCount * i
                 // 3D空間にグループを追加する
                 group.add(g);
             }
@@ -182,7 +183,7 @@
         function render() {
 
             if (!isPause) {
-                group.rotation.y += 0.03;
+                group.rotation.y += 0.1;
                 group.rotation.y %= displayFaceDegree; // この2行は擬似的に回転を表現するため
             }
 
@@ -191,21 +192,24 @@
                 for (var i = 0; i < group.children.length; i++) {
                     let geometory = group.children[i].geometry;
                     geometory.colorsNeedUpdate = true;
-                    var angle = (group.children[i].rotation.y + offset) % Math.PI
+                    var angle = (group.children[i].rotation.y + offset) % (2 * Math.PI)
                     let faceNo = Math.floor((angle) / dataFaceDegree) % dataFaceCount;
 
 
                     for (var y = 0; y < LedCylinderHeight; y++) {
-                        for (var x = 0; x < LedCylinderWidth; x++) {
-                            var geoIdx = (LedCylinderWidth * y) + x
-                            var dataIdx = ((faceNo * LedCylinderHeight * LedCylinderWidth) + (LedCylinderWidth * y) + x) * 3
+                        for (var x = 0; x < LedCylinderRadius; x++) {
+
+                            var geoIdx = ((LedCylinderRadius * y) + x)
+                            var dataIdx = ((faceNo * LedCylinderHeight * LedCylinderRadius)
+                                + (LedCylinderRadius * y) + x) * 3
+
                             var color = ((frameBuffer[dataIdx] << 16) >>> 0) +
                                 ((frameBuffer[dataIdx + 1] << 8) >>> 0) +
                                 ((frameBuffer[dataIdx + 2] << 0) >>> 0);
+
                             var targetColor = geometory.colors[geoIdx];
                             if (targetColor) {
                                 targetColor.setHex(color);
-
                             }
                             else {
                                 console.log(geoIdx);

@@ -18,7 +18,7 @@ const CylinderDataSharedObjectID = "cylinder"
 var gServiceGatewayCylinderData *serviceGatewayCylinderData
 
 func NewLedSudareData() util.ByteData {
-	return util.NewByteData(CylinderWidth * CylinderHeight * CylinderCount * CylinderColorPlane)
+	return util.NewByteData(CylinderRadius * CylinderHeight * CylinderCount * CylinderColorPlane)
 }
 
 func InitSeriveGatewayCylinderData(endpoint string) {
@@ -63,11 +63,7 @@ func serviceGatewayCylinderDataWorker(sock *zmq.Sock, c chan string, done chan s
 			log.Info("Receive Image from ZeroMQ PUB: ", len(data))
 
 			plane := 0
-			if len(data) == 720000 {
-				plane = 4
-			} else if len(data) == 540000 {
-				plane = 3
-			} else if len(data) == 360000 {
+			if len(data) == 180000 {
 				plane = 2
 			} else {
 				log.Warn("Receive Image Size was invalid. ", len(data), data)
@@ -79,11 +75,11 @@ func serviceGatewayCylinderDataWorker(sock *zmq.Sock, c chan string, done chan s
 
 					util.ConcurrentEnum(0, CylinderCount, func(r int) {
 						for y := 0; y < CylinderHeight; y++ {
-							for x := 0; x < CylinderWidth; x++ {
-								idxFrom := (r * CylinderHeight * CylinderWidth * plane) +
-									(y * CylinderWidth * plane) + (plane * x)
-								idxTo := (r * CylinderHeight * CylinderWidth * CylinderColorPlane) +
-									(y * CylinderWidth * CylinderColorPlane) + (CylinderColorPlane * x)
+							for x := 0; x < CylinderRadius; x++ {
+								idxFrom := (r * CylinderHeight * CylinderRadius * plane) +
+									(y * CylinderRadius * plane) + (plane * x)
+								idxTo := (r * CylinderHeight * CylinderRadius * CylinderColorPlane) +
+									(y * CylinderRadius * CylinderColorPlane) + (CylinderColorPlane * x)
 
 								if plane == 2 {
 
