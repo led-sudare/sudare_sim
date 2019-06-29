@@ -12,8 +12,7 @@ RUN apk update && \
 
 ENV GO111MODULE=on
 EXPOSE 2345
-
-RUN mkdir /go/src/simulator
-WORKDIR /go/src/simulator
+ARG cname
+WORKDIR /go/src/${cname}
 
 ENTRYPOINT ["./docker-entrypoint.sh"]

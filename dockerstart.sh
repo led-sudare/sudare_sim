@@ -1,2 +1,3 @@
 #!/bin/sh
-docker restart led-sudare-simulator
+cname=`cat ./cname`
+docker restart $cname

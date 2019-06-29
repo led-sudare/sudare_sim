@@ -1,4 +1,5 @@
 #!/bin/sh
-rm /usr/bin/simulator
-go build -o /usr/bin/simulator
-exec /usr/bin/simulator
+cname=`cat ./cname`
+rm /usr/bin/$cname
+go build -o /usr/bin/$cname
+exec /usr/bin/$cname
