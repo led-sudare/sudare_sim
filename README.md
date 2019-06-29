@@ -12,7 +12,7 @@ LEDすだれのシュミレータ
 
 1. 適当なディレクトリで、`git clone https://github.com/led-sudare/simulator.git`
 2. `./dockerbuild.sh`
-3. ブラウザを立ち上げ"http://localhost:2345"にアクセスする
+3. ブラウザを立ち上げ"http://localhost:2345" にアクセスする
 
 # Configuration
 
