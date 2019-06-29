@@ -12,6 +12,7 @@ LEDすだれのシュミレータ
 
 1. 適当なディレクトリで、`git clone https://github.com/led-sudare/simulator.git`
 2. `./dockerbuild.sh`
+3. ブラウザを立ち上げ"http://localhost:2345"にアクセスする
 
 # Configuration
 
@@ -26,7 +27,7 @@ LEDすだれのシュミレータ
 config.jsonのzmqTargetにホストマシンのIPアドレスと、3d_led_cube_adapterのZmqのポート番号(デフォルト5563)を設定してください。
 
 
-## ソースコードを変更した場合
+## goのソースコードを変更の反映したい場合
 1. simulatorのDockerコンテナを再起動する
 
 
