@@ -1,0 +1,10 @@
+{
+    "//comment": "Http Server Port",
+    "port": 2345,
+    "//comment": "true: output verbose log",
+    "logVerbose": false,
+    "//comment": "zeroMq SUB target to bind.",
+    "//comment": "一つのPC、ZMQのPUBがDockerのBridgeネットワーク内にある場合は、ホストのIPを指定する必要がある",
+    "zmqTarget": "192.168.1.12:5563",
+    "//zmqTarget": "0.0.0.0:5563"
+}

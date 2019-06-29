@@ -23,6 +23,7 @@ func NewLedSudareData() util.ByteData {
 
 func InitSeriveGatewayCylinderData(endpoint string) {
 
+	log.Info("InitSeriveGatewayCylinderData:", endpoint)
 	util.AddSharedByteData(CylinderDataSharedObjectID, NewLedSudareData())
 
 	gServiceGatewayCylinderData = &serviceGatewayCylinderData{}

@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	log "github.com/cihub/seelog"
@@ -13,12 +14,19 @@ import (
 	"simulator/lib/util"
 )
 
-var (
-	port         = flag.String("p", ":2345", "http service port")
-	logVerbose   = flag.Bool("v", false, "output detailed log.")
-	interval     = flag.Int("i", 1000, "advertising interval time(ms)")
-	optInputPort = flag.String("r", "127.0.0.1:5563", "Specify IP and port of server main_realsense_serivce.py running.")
-)
+type Configs struct {
+	Port       int    `json:"port"`
+	LogVorbose bool   `json:"logVorbose"`
+	ZmqTarget  string `json:"zmqTarget"`
+}
+
+func NewConfigs() Configs {
+	return Configs{
+		Port:       2345,
+		LogVorbose: false,
+		ZmqTarget:  "0.0.0.0:5563",
+	}
+}
 
 var upgrader = websocket.Upgrader{}
 
@@ -78,6 +86,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
+
 	if r.URL.Path == "/" {
 		http.ServeFile(w, r, "./www/index.html")
 	} else {
@@ -86,6 +95,15 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
+	configs := NewConfigs()
+	util.ReadConfig(&configs)
+
+	var (
+		port         = flag.Int("p", configs.Port, "http service port")
+		optInputPort = flag.String("r", configs.ZmqTarget, "Specify IP and port of server zeromq PUB running.")
+	)
+
 	flag.Parse()
 
 	lib.InitSeriveGatewayCylinderData("tcp://" + *optInputPort)
@@ -96,6 +114,6 @@ func main() {
 		serveWs(w, r)
 	})
 
-	log.Infof("Server is running on port: %s\n", *port)
-	log.Error(http.ListenAndServe(*port, nil))
+	log.Infof("Server is running on port: %v\n", *port)
+	log.Error(http.ListenAndServe(":"+strconv.Itoa(*port), nil))
 }
