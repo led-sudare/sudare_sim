@@ -27,12 +27,12 @@ func InitSeriveGatewayCylinderData(endpoint string) {
 	util.AddSharedByteData(CylinderDataSharedObjectID, NewLedSudareData())
 
 	gServiceGatewayCylinderData = &serviceGatewayCylinderData{}
-	var err error
-	gServiceGatewayCylinderData.sock, err = zmq.NewSub(endpoint, "")
+	gServiceGatewayCylinderData.sock = zmq.NewSock(zmq.Sub)
+	gServiceGatewayCylinderData.sock.SetSubscribe("")
+	err := gServiceGatewayCylinderData.sock.Connect(endpoint)
 	if err != nil {
 		panic(err)
 	}
-	gServiceGatewayCylinderData.sock.Connect(endpoint)
 	gServiceGatewayCylinderData.order = make(chan string)
 	gServiceGatewayCylinderData.done = make(chan struct{})
 

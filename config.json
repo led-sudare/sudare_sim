@@ -5,6 +5,6 @@
     "logVerbose": false,
     "//comment": "zeroMq SUB target to bind.",
     "//comment": "一つのPC、ZMQのPUBがDockerのBridgeネットワーク内にある場合は、ホストのIPを指定する必要がある",
-    "zmqTarget": "192.168.1.12:5563",
-    "//zmqTarget": "0.0.0.0:5563"
+    "zmqTarget": "192.168.1.12:5511",
+    "//zmqTarget": "0.0.0.0:5511"
 }

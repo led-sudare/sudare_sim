@@ -24,7 +24,7 @@ func NewConfigs() Configs {
 	return Configs{
 		Port:       2345,
 		LogVorbose: false,
-		ZmqTarget:  "0.0.0.0:5563",
+		ZmqTarget:  "0.0.0.0:5511",
 	}
 }
 
