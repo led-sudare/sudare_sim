@@ -16,5 +16,6 @@ RUN apk --no-cache add ca-certificates czmq
 EXPOSE 2345
 WORKDIR /app
 COPY --from=Builder /app/sim /app/
+COPY --from=Builder /app/config.json /app/config.json
 COPY --from=Builder /app/www /app/www
 CMD /app/sim
