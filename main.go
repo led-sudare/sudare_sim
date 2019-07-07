@@ -61,11 +61,12 @@ func serveWs(w http.ResponseWriter, r *http.Request) {
 	clock := time.NewTicker(time.Duration(100 * time.Millisecond))
 	defer clock.Stop()
 
+	log.Info("websocket start..")
+
 	for {
 		<-clock.C
 		err := util.EditSharedByteData(lib.CylinderDataSharedObjectID,
 			func(editable util.ByteData) error {
-				log.Info("Send WebSocket Data: ", len(editable.GetBytes()))
 				ws.SetWriteDeadline(time.Now().Add(200 * time.Millisecond))
 				if err := ws.WriteMessage(websocket.BinaryMessage, editable.GetBytes()); err != nil {
 					log.Debug("ws.WriteMessage", err)
@@ -114,6 +115,6 @@ func main() {
 		serveWs(w, r)
 	})
 
-	log.Infof("Server is running on port: %v\n", *port)
+	log.Infof("Server is running on port: %v", *port)
 	log.Error(http.ListenAndServe(":"+strconv.Itoa(*port), nil))
 }
