@@ -1,4 +1,4 @@
-module simulator
+module sudare_sim
 
 go 1.12
 

@@ -4,7 +4,7 @@ import (
 	log "github.com/cihub/seelog"
 	zmq "github.com/zeromq/goczmq"
 
-	"simulator/lib/util"
+	"sudare_sim/lib/util"
 )
 
 type serviceGatewayCylinderData struct {

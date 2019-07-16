@@ -10,21 +10,21 @@ import (
 	log "github.com/cihub/seelog"
 	"github.com/gorilla/websocket"
 
-	"simulator/lib"
-	"simulator/lib/util"
+	"sudare_sim/lib"
+	"sudare_sim/lib/util"
 )
 
 type Configs struct {
-	Port       int    `json:"port"`
-	LogVorbose bool   `json:"logVorbose"`
-	ZmqTarget  string `json:"zmqTarget"`
+	Port          int    `json:"port"`
+	LogVorbose    bool   `json:"logVorbose"`
+	XProxyPubBind string `json:"XProxyPubBind"`
 }
 
 func NewConfigs() Configs {
 	return Configs{
-		Port:       2345,
-		LogVorbose: false,
-		ZmqTarget:  "0.0.0.0:5511",
+		Port:          2345,
+		LogVorbose:    false,
+		XProxyPubBind: "0.0.0.0:5511",
 	}
 }
 
@@ -101,13 +101,13 @@ func main() {
 	util.ReadConfig(&configs)
 
 	var (
-		port         = flag.Int("p", configs.Port, "http service port")
-		optInputPort = flag.String("r", configs.ZmqTarget, "Specify IP and port of server zeromq PUB running.")
+		port          = flag.Int("p", configs.Port, "http service port")
+		xproxyPubBind = flag.String("r", configs.XProxyPubBind, "Specify IP and port of server zeromq PUB running.")
 	)
 
 	flag.Parse()
 
-	lib.InitSeriveGatewayCylinderData("tcp://" + *optInputPort)
+	lib.InitSeriveGatewayCylinderData("tcp://" + *xproxyPubBind)
 
 	/// setup and start http server
 	http.HandleFunc("/", serveHome)
