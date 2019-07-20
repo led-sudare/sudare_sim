@@ -5,5 +5,5 @@
     "logVerbose": false,
     "//comment": "XProxy PUB Bind Address : 任意のIPとポートを指定する",
     "//comment": "一つのPC、ZMQのPUBがDockerのBridgeネットワーク内にある場合は、ホストのIPを指定する必要がある",
-    "XProxyPubBind": "192.168.1.12:5511"
+    "XProxyPubBind": "sudarepi-a.local:5511"
 }
