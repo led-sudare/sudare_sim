@@ -77,8 +77,7 @@ func serviceGatewayCylinderDataWorker(sock *zmq.Sock, c chan string, done chan s
 					util.ConcurrentEnum(0, CylinderCount, func(r int) {
 						for y := 0; y < CylinderHeight; y++ {
 							for x := 0; x < CylinderRadius; x++ {
-								idxFrom := (r * CylinderHeight * CylinderRadius * plane) +
-									(y * CylinderRadius * plane) + (plane * x)
+								idxFrom := ((r * CylinderRadius + x) * CylinderHeight + y) * plane
 								idxTo := (r * CylinderHeight * CylinderRadius * CylinderColorPlane) +
 									(y * CylinderRadius * CylinderColorPlane) + (CylinderColorPlane * x)
 
