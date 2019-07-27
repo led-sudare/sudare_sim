@@ -38,34 +38,26 @@
         animate();
 
         var frameBuffer = null;
-        let ws;
 
         window.onload = () => {
-            ws = openWebSocket();
+            openWebSocket();
             var btn_pause = document.getElementById('btn_pause');
             btn_pause.addEventListener("click", () => {
                 isPause = !isPause;
                 if (isPause) {
                     btn_pause.textContent = "Resume";
-                    ws.close();
-                    ws = null;
                 }
                 else {
                     btn_pause.textContent = "Pause";
-                    ws = openWebSocket();
                 }
             })
-        }
-        window.onclose = () => {
-            if (ws) {
-                ws.close();
-                isPause = true;
-            }
         }
 
         function openWebSocket() {
             var ws = new WebSocket('ws://' + window.location.host + '/ws')
-            //        var faces = [];
+            if (!ws) {
+                return ws;
+            }
 
             // 接続
             ws.addEventListener('open', function (e) {
@@ -85,6 +77,13 @@
             });
             ws.addEventListener('close', function (e) {
                 console.log("WebSocket closed.")
+                var id = setInterval(function () {
+                    var ws = openWebSocket(charts);
+                    if (ws) {
+                        clearInterval(id);　//idをclearIntervalで指定している
+                    }
+                    console.log('try to open ws...')
+                }, 2000);
             });
             return ws;
         }
@@ -97,7 +96,7 @@
                 for (var x = 0; x < LedCylinderRadius; x++) {
 
                     geometry.vertices.push(
-                        new THREE.Vector3(x, y, 0)
+                        new THREE.Vector3(x * 1.5, y, 0)
                     );
                     geometry.colors.push(
                         new THREE.Color(0, 1, 0)
