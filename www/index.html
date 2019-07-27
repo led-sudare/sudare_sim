@@ -78,7 +78,7 @@
             ws.addEventListener('close', function (e) {
                 console.log("WebSocket closed.")
                 var id = setInterval(function () {
-                    var ws = openWebSocket(charts);
+                    var ws = openWebSocket();
                     if (ws) {
                         clearInterval(id);　//idをclearIntervalで指定している
                     }
